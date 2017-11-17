@@ -574,15 +574,17 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
                 FileHelper.stripFileProtocol(this.croppedUri.toString()) :
                 this.imageUri.getFilePath();
 
-
+        Log.i(LOG_TAG, "Process result from camera. sourcePath: " + sourcePath);
+        Log.i(LOG_TAG, "Process result from camera. Encoding type: " + this.encodingType);
         if (this.encodingType == JPEG) {
             try {
                 //We don't support PNG, so let's not pretend we do
                 exif.createInFile(sourcePath);
                 exif.readExifData();
                 rotate = exif.getOrientation();
-
+                Log.i(LOG_TAG, "Process result from camera. rotate: " + rotate);
             } catch (IOException e) {
+                Log.i(LOG_TAG, "Process result from camera. exif exception: " + e);
                 e.printStackTrace();
             }
         }
@@ -594,12 +596,14 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
         // in the gallery and the modified image is saved in the temporary
         // directory
         if (this.saveToPhotoAlbum) {
+            LOG.i(LOG_TAG, "Process result from camera. Save to photo album");
             galleryUri = Uri.fromFile(new File(getPicturesPath()));
-
+            LOG.i(LOG_TAG, "Process result from camera. Gallery URI " + (galleryUri != null ? galleryUri.getPath() : galleryUri));
             if (this.allowEdit && this.croppedUri != null) {
                 writeUncompressedImage(croppedUri, galleryUri);
             } else {
                 Uri imageUri = this.imageUri.getFileUri();
+                LOG.i(LOG_TAG, "Process result from camera. Image uri " + (imageUri != null ? imageUri.getPath() : imageUri));
                 writeUncompressedImage(imageUri, galleryUri);
             }
 
@@ -632,6 +636,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
 
         // If sending filename back
         else if (destType == FILE_URI || destType == NATIVE_URI) {
+            Log.i(LOG_TAG, "Process result from camera. Dest type file URI");
             // If all this is true we shouldn't compress the image.
             if (this.targetHeight == -1 && this.targetWidth == -1 && this.mQuality == 100 &&
                     !this.correctOrientation) {
@@ -655,6 +660,8 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
                 }
             } else {
                 Uri uri = Uri.fromFile(createCaptureFile(this.encodingType, System.currentTimeMillis() + ""));
+                Log.i(LOG_TAG, "Process result from camera. FILE URI: " + uri);
+
                 bitmap = getScaledAndRotatedBitmap(sourcePath);
 
                 // Double-check the bitmap.
@@ -915,6 +922,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
                                 createCaptureFile(this.encodingType));
                         performCrop(tmpFile, destType, intent);
                     } else {
+                        Log.i(LOG_TAG, "Camera result OK: " + destType);
                         this.processResultFromCamera(destType, intent);
                     }
                 } catch (IOException e) {
@@ -975,6 +983,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             IOException {
         OutputStream os = null;
         try {
+            LOG.i(LOG_TAG, "Write uncompressed image. Dest " + (dest != null ? dest.getPath() : dest));
             os = this.cordova.getActivity().getContentResolver().openOutputStream(dest);
             byte[] buffer = new byte[4096];
             int len;
@@ -1079,17 +1088,24 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
         try {
             InputStream fileStream = FileHelper.getInputStreamFromUriString(imageUrl, cordova);
             if (fileStream != null) {
+                LOG.i(LOG_TAG, "Scaling and rotating bitmap. File stream " + fileStream);
                 // Generate a temporary file
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                LOG.i(LOG_TAG, "Scaling and rotating bitmap. timestamp" + timeStamp);
                 String fileName = "IMG_" + timeStamp + (this.encodingType == JPEG ? ".jpg" : ".png");
+                LOG.i(LOG_TAG, "Scaling and rotating bitmap. Filename " + fileName);
                 localFile = new File(getTempDirectoryPath() + fileName);
+                LOG.i(LOG_TAG, "Scaling and rotating bitmap. LocalFile " + (localFile != null ? localFile.getPath() : localFile));
                 galleryUri = Uri.fromFile(localFile);
+                LOG.i(LOG_TAG, "Scaling and rotating bitmap. Gallery URI " + (galleryUri != null ? galleryUri.getPath() : galleryUri));
                 writeUncompressedImage(fileStream, galleryUri);
                 try {
                     String mimeType = FileHelper.getMimeType(imageUrl.toString(), cordova);
+                    LOG.i(LOG_TAG, "Scaling and rotating bitmap. MimeType " + mimeType);
                     if ("image/jpeg".equalsIgnoreCase(mimeType)) {
                         //  ExifInterface doesn't like the file:// prefix
                         String filePath = galleryUri.toString().replace("file://", "");
+                        LOG.i(LOG_TAG, "Scaling and rotating bitmap. File path " + filePath);
                         // read exifData of source
                         exifData = new ExifHelper();
                         exifData.createInFile(filePath);
@@ -1111,7 +1127,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             return null;
         }
 
-
+        LOG.i(LOG_TAG, "Scaling and rotating bitmap. Figure out the original width and height of the image");
 
         try {
             // figure out the original width and height of the image
@@ -1120,6 +1136,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             InputStream fileStream = null;
             try {
                 fileStream = FileHelper.getInputStreamFromUriString(galleryUri.toString(), cordova);
+                LOG.i(LOG_TAG, "Scaling and rotating bitmap. Filestream " + fileStream);
                 BitmapFactory.decodeStream(fileStream, null, options);
             } finally {
                 if (fileStream != null) {
