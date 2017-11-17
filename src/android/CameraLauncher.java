@@ -1082,30 +1082,31 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
 
              We delete the temporary file once we are done
          */
+        Log.i(LOG_TAG, "Scaling and rotating bitmap");
         File localFile = null;
         Uri galleryUri = null;
         int rotate = 0;
         try {
             InputStream fileStream = FileHelper.getInputStreamFromUriString(imageUrl, cordova);
+            Log.i(LOG_TAG, "Scaling and rotating bitmap. File stream " + fileStream);
             if (fileStream != null) {
-                LOG.i(LOG_TAG, "Scaling and rotating bitmap. File stream " + fileStream);
                 // Generate a temporary file
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                LOG.i(LOG_TAG, "Scaling and rotating bitmap. timestamp" + timeStamp);
+                Log.i(LOG_TAG, "Scaling and rotating bitmap. timestamp" + timeStamp);
                 String fileName = "IMG_" + timeStamp + (this.encodingType == JPEG ? ".jpg" : ".png");
-                LOG.i(LOG_TAG, "Scaling and rotating bitmap. Filename " + fileName);
+                Log.i(LOG_TAG, "Scaling and rotating bitmap. Filename " + fileName);
                 localFile = new File(getTempDirectoryPath() + fileName);
-                LOG.i(LOG_TAG, "Scaling and rotating bitmap. LocalFile " + (localFile != null ? localFile.getPath() : localFile));
+                Log.i(LOG_TAG, "Scaling and rotating bitmap. LocalFile " + (localFile != null ? localFile.getPath() : localFile));
                 galleryUri = Uri.fromFile(localFile);
-                LOG.i(LOG_TAG, "Scaling and rotating bitmap. Gallery URI " + (galleryUri != null ? galleryUri.getPath() : galleryUri));
+                Log.i(LOG_TAG, "Scaling and rotating bitmap. Gallery URI " + (galleryUri != null ? galleryUri.getPath() : galleryUri));
                 writeUncompressedImage(fileStream, galleryUri);
                 try {
                     String mimeType = FileHelper.getMimeType(imageUrl.toString(), cordova);
-                    LOG.i(LOG_TAG, "Scaling and rotating bitmap. MimeType " + mimeType);
+                    Log.i(LOG_TAG, "Scaling and rotating bitmap. MimeType " + mimeType);
                     if ("image/jpeg".equalsIgnoreCase(mimeType)) {
                         //  ExifInterface doesn't like the file:// prefix
                         String filePath = galleryUri.toString().replace("file://", "");
-                        LOG.i(LOG_TAG, "Scaling and rotating bitmap. File path " + filePath);
+                        Log.i(LOG_TAG, "Scaling and rotating bitmap. File path " + filePath);
                         // read exifData of source
                         exifData = new ExifHelper();
                         exifData.createInFile(filePath);
@@ -1127,7 +1128,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             return null;
         }
 
-        LOG.i(LOG_TAG, "Scaling and rotating bitmap. Figure out the original width and height of the image");
+        Log.i(LOG_TAG, "Scaling and rotating bitmap. Figure out the original width and height of the image");
 
         try {
             // figure out the original width and height of the image
