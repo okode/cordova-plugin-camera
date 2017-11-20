@@ -598,14 +598,14 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
         // in the gallery and the modified image is saved in the temporary
         // directory
         if (this.saveToPhotoAlbum) {
-            LOG.i(LOG_TAG, "Process result from camera. Save to photo album");
+            Log.i(LOG_TAG, "Process result from camera. Save to photo album");
             galleryUri = Uri.fromFile(new File(getPicturesPath()));
-            LOG.i(LOG_TAG, "Process result from camera. Gallery URI " + (galleryUri != null ? galleryUri.getPath() : galleryUri));
+            Log.i(LOG_TAG, "Process result from camera. Gallery URI " + (galleryUri != null ? galleryUri.getPath() : galleryUri));
             if (this.allowEdit && this.croppedUri != null) {
                 writeUncompressedImage(croppedUri, galleryUri);
             } else {
                 Uri imageUri = this.imageUri.getFileUri();
-                LOG.i(LOG_TAG, "Process result from camera. Image uri " + (imageUri != null ? imageUri.getPath() : imageUri));
+                Log.i(LOG_TAG, "Process result from camera. Image uri " + (imageUri != null ? imageUri.getPath() : imageUri));
                 writeUncompressedImage(imageUri, galleryUri);
             }
 
@@ -711,6 +711,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
         String imageFileName = "IMG_" + timeStamp + (this.encodingType == JPEG ? ".jpg" : ".png");
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
+        Log.i(LOG_TAG, "Get pictures path: " + storageDir != null ? storageDir.getPath() : null);
         String galleryPath = storageDir.getAbsolutePath() + "/" + imageFileName;
         return galleryPath;
     }
@@ -986,7 +987,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             IOException {
         OutputStream os = null;
         try {
-            LOG.i(LOG_TAG, "Write uncompressed image. Dest " + (dest != null ? dest.getPath() : dest));
+            Log.i(LOG_TAG, "Write uncompressed image. Dest " + (dest != null ? dest.getPath() : dest));
             os = this.cordova.getActivity().getContentResolver().openOutputStream(dest);
             byte[] buffer = new byte[4096];
             int len;
@@ -1140,7 +1141,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
             InputStream fileStream = null;
             try {
                 fileStream = FileHelper.getInputStreamFromUriString(galleryUri.toString(), cordova);
-                LOG.i(LOG_TAG, "Scaling and rotating bitmap. Filestream " + fileStream);
+                Log.i(LOG_TAG, "Scaling and rotating bitmap. Filestream " + fileStream);
                 BitmapFactory.decodeStream(fileStream, null, options);
             } finally {
                 if (fileStream != null) {
