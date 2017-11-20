@@ -336,16 +336,15 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
         //We can write to this URI, this will hopefully allow us to write files to get to the next step
         intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         String uriPath = this.imageUri != null && this.imageUri.getCorrectUri() != null ? this.imageUri.getCorrectUri().getPath() : null;
-        LOG.i(LOG_TAG, "Take picture. Image uri " + uriPath);
-        LOG.i(LOG_TAG, "Take picture. Return type: " + returnType);
-        LOG.i(LOG_TAG, "Take picture. Encoding type: " + encodingType);
+        Log.e(LOG_TAG, "Take picture. Image uri " + uriPath);
+        Log.e(LOG_TAG, "Take picture. Return type: " + returnType);
+        Log.e(LOG_TAG, "Take picture. Encoding type: " + encodingType);
 
         if (this.cordova != null) {
             // Let's check to make sure the camera is actually installed. (Legacy Nexus 7 code)
             PackageManager mPm = this.cordova.getActivity().getPackageManager();
             if(intent.resolveActivity(mPm) != null)
             {
-
                 this.cordova.startActivityForResult((CordovaPlugin) this, intent, (CAMERA + 1) * 16 + returnType + 1);
             }
             else
