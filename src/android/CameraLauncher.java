@@ -285,11 +285,10 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
     public void callTakePicture(int returnType, int encodingType) {
         boolean saveAlbumPermission = PermissionHelper.hasPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
         boolean takePicturePermission = PermissionHelper.hasPermission(this, Manifest.permission.CAMERA);
-
+        Log.e(LOG_TAG, "Call take picture. Album permission: " + saveAlbumPermission + ", takePicturePermission: " + takePicturePermission);
         // CB-10120: The CAMERA permission does not need to be requested unless it is declared
         // in AndroidManifest.xml. This plugin does not declare it, but others may and so we must
         // check the package info to determine if the permission is present.
-
         if (!takePicturePermission) {
             takePicturePermission = true;
             try {
@@ -871,6 +870,7 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
      */
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
 
+        Log.e(LOG_TAG, "onActivityResult. Request code: " + requestCode + ", result code: " + resultCode);
         /* Interrupting the plugin execution if the cordova application was restarted by OS.
         * We detect that the application was restarted because class variables are cleaned up (not initialized)
         * This check avoids a frequent crash with {@see android.support.v4.content.FileProvider} which
